@@ -1,0 +1,22 @@
+{
+  "name": "@novazero/tslint-extensions",
+  "version": "0.0.1",
+  "description": "Extra TSLint rules",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "tslint",
+    "extra",
+    "extension",
+    "rule",
+    "rules"
+  ],
+  "author": "Daan Scheerens",
+  "license": "MIT",
+  "devDependencies": {
+    "tslint": "^5.9.1",
+    "typescript": "^2.7.2"
+  }
+}
