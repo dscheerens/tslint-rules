@@ -1,0 +1,8 @@
+{
+    "rulesDirectory": [
+        "./build/dist"
+    ],
+    "rules": {
+        "strict-indent-size": true
+    }
+}
