@@ -1,4 +1,4 @@
-import { getLineRanges } from 'tsutils';
+import { getLineRanges, getTokenAtPosition, isPositionInComment } from 'tsutils';
 import * as Lint from 'tslint';
 import * as ts from 'typescript';
 
@@ -53,21 +53,37 @@ function walk(ctx: Lint.WalkContext<Options>): void {
 
     getLineRanges(sourceFile)
         .filter(({ contentLength }) => contentLength > 0)
-        .forEach((lineRange) => {
-
-            const line = sourceFile.text.substr(lineRange.pos, lineRange.contentLength);
+        .map(({ pos: position, contentLength }) => {
+            const line = sourceFile.text.substr(position, contentLength);
 
             const [indentation] = line.match(/^( )*/)!;
 
             const indentationSize = indentation.length;
 
-            // TODO: Check for exceptions:
-            // - string templates
-            // - jsdoc
+            const token = getTokenAtPosition(sourceFile, position)!;//
 
-            if (indentationSize % options.size > 0) {
-                ctx.addFailureAt(lineRange.pos, indentationSize, `Indentation should be a multiple of ${options.size} spaces`);
-            }
-
+            return { position, indentationSize, token }
+        })
+        .filter(({ position, indentationSize, token }) =>
+            !isPositionInComment(sourceFile, position, token) &&
+            !isWithinKind(token, ts.SyntaxKind.TemplateExpression) &&
+            indentationSize % options.size > 0
+        )
+        .forEach(({ position, indentationSize }) => {
+            ctx.addFailureAt(position, indentationSize, `Indentation should be a multiple of ${options.size} spaces`);
         });
+}
+
+function isWithinKind(token: ts.Node, kind: ts.SyntaxKind): boolean {
+    let tokenToCheck: ts.Node | undefined = token;
+
+    while (tokenToCheck !== undefined) {
+        if (tokenToCheck.kind === kind) {
+            return true;
+        }
+
+        tokenToCheck = tokenToCheck.parent;
+    }
+
+    return false;
 }
