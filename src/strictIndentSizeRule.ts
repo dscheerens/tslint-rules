@@ -22,6 +22,10 @@ export class Rule extends Lint.Rules.AbstractRule {
         typescriptOnly: false
     }
 
+    public static FAILURE_MESSAGE(indentSize: number): string {
+        return `Indentation should be a multiple of ${indentSize} spaces`;
+    }
+
     public apply(sourceFile: ts.SourceFile): Lint.RuleFailure[] {
         const options = parseOptions(this.ruleArguments);
         return options === undefined ? [] : this.applyWithFunction(sourceFile, walk, options);
@@ -70,7 +74,7 @@ function walk(ctx: Lint.WalkContext<Options>): void {
             indentationSize % options.size > 0
         )
         .forEach(({ position, indentationSize }) => {
-            ctx.addFailureAt(position, indentationSize, `Indentation should be a multiple of ${options.size} spaces`);
+            ctx.addFailureAt(position, indentationSize, Rule.FAILURE_MESSAGE(options.size));
         });
 }
 
