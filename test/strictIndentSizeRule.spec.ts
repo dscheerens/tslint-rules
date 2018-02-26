@@ -1,4 +1,4 @@
-import { defineTestCases } from './utils';
+import { defineTestCases, source } from './utils';
 import { Rule } from '../src/strictIndentSizeRule';
 
 defineTestCases(Rule.metadata.ruleName, [
@@ -18,7 +18,7 @@ defineTestCases(Rule.metadata.ruleName, [
             {
                 message: Rule.FAILURE_MESSAGE(2),
                 startPosition: 0,
-                endPosition: 1
+                width: 1
             }
         ]
     },
@@ -38,7 +38,73 @@ defineTestCases(Rule.metadata.ruleName, [
             {
                 message: Rule.FAILURE_MESSAGE(4),
                 startPosition: 0,
-                endPosition: 5
+                width: 5
+            }
+        ]
+    },
+
+    {
+        description: 'has a default configuration for an indent size of 4',
+        source: 'const foo = 1;\n const bar = 2;',
+        failures: [
+            {
+                message: Rule.FAILURE_MESSAGE(4),
+                startPosition: 15,
+                width: 1
+            }
+        ]
+    },
+
+    {
+        description: 'supports more than one violation per source',
+        source: ' const foo = 1;\n  const bar = 2;',
+        failures: [
+            {
+                message: Rule.FAILURE_MESSAGE(4),
+                startPosition: 0,
+                width: 1
+            },
+            {
+                message: Rule.FAILURE_MESSAGE(4),
+                startPosition: 16,
+                width: 2
+            }
+        ]
+    },
+
+    {
+        description: 'ignores indentation of lines within a comment',
+        source: source(
+            'const foo = 4;',
+            '/**',
+            ' * This should not give a lint failure',
+            ' */',
+            'function bar() { }',
+            '   const baz = "oops!"; <-- this should!'
+        ),
+        failures: [
+            {
+                message: Rule.FAILURE_MESSAGE(4),
+                startPosition: 81,
+                width: 3
+            }
+        ]
+    },
+
+    {
+        description: 'ignores indentation of lines within a string template expression',
+        source: source(
+            'const foo = `1 + 2 = ${',
+            ' 1 + 2',
+            '}`;',
+            'function bar() { }',
+            '   const baz = "oops!"; <-- this should!'
+        ),
+        failures: [
+            {
+                message: Rule.FAILURE_MESSAGE(4),
+                startPosition: 54,
+                width: 3
             }
         ]
     }

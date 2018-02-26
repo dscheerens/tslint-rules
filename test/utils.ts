@@ -27,7 +27,7 @@ export interface LintFailure {
     ruleName: string,
     message: string,
     startPosition: number;
-    endPosition: number;
+    width: number;
 }
 
 function extractFailures(lintResult: tslint.LintResult): LintFailure[] {
@@ -35,7 +35,7 @@ function extractFailures(lintResult: tslint.LintResult): LintFailure[] {
         ruleName: failure.getRuleName(),
         message: failure.getFailure(),
         startPosition: failure.getStartPosition().getPosition(),
-        endPosition: failure.getEndPosition().getPosition()
+        width: failure.getEndPosition().getPosition() - failure.getStartPosition().getPosition()
     }));
 }
 
@@ -50,7 +50,7 @@ export interface TestCase {
 export interface TestCaseFailure {
     message: string,
     startPosition: number;
-    endPosition: number;
+    width: number;
 }
 
 export function defineTestCases(ruleName: string, testCases: TestCase[]): void {
@@ -69,4 +69,8 @@ function defineTestCase(testCase: TestCase, ruleName: string): void {
 
         expect(failures).toEqual(expectedFailures);
     });
+}
+
+export function source(...lines: string[]): string {
+    return lines.join('\n');
 }
