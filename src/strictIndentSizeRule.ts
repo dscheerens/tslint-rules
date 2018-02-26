@@ -33,7 +33,7 @@ export class Rule extends Lint.Rules.AbstractRule {
             minLength: 0,
             maxLength: 1
         },
-        optionsDescription: 'An optional argument for the indentation size can be specified, which can be either 2 or 4.',
+        optionsDescription: 'An optional argument for the indentation size can be specified, which should be either 2 or 4.',
         optionExamples: [
             [true],
             [true, OPTION_INDENT_SIZE_2],
