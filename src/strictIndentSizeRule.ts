@@ -2,23 +2,43 @@ import { getLineRanges, getTokenAtPosition, isPositionInComment } from 'tsutils'
 import * as Lint from 'tslint';
 import * as ts from 'typescript';
 
+const OPTION_INDENT_SIZE_2 = 2;
+const OPTION_INDENT_SIZE_4 = 4;
+
 export class Rule extends Lint.Rules.AbstractRule {
 
     public static metadata: Lint.IRuleMetadata = {
         ruleName: 'strict-indent-size',
         type: 'style',
         description: 'Enforce strict indentation sizes.',
-        descriptionDetails: 'bla',
+        descriptionDetails: Lint.Utils.dedent`
+            Checks that all code is indented properly using a fixed indentation size.
+            When this rule is enabled the indentation length for each line is checked
+            by verifying that it is a multiple of either 2 or 4 spaces.
+            The desired indentation size of 2 or 4 spaces can be set through the options of this rule.
+
+            Indentation is not checked for lines that are part of a comment or template strings.
+
+            **NOTE**: This rule assumes that indentation is done using spaces. It will not check for tabs.
+        `,
+        rationale: 'Using a strict indentation size results in cleaner looking code.',
         options: {
             type: 'array',
             items: [
                 {
                     type: 'number',
-                    enum: [2, 4]
+                    enum: [OPTION_INDENT_SIZE_2, OPTION_INDENT_SIZE_4]
                 }
-            ]
+            ],
+            minLength: 0,
+            maxLength: 1
         },
-        optionsDescription: '',
+        optionsDescription: 'An optional argument for the indentation size can be specified, which can be either 2 or 4.',
+        optionExamples: [
+            [true],
+            [true, OPTION_INDENT_SIZE_2],
+            [true, OPTION_INDENT_SIZE_4]
+        ],
         typescriptOnly: false
     }
 
@@ -37,10 +57,10 @@ function parseOptions(ruleArguments: any[]): Options | undefined {
     const size = ruleArguments[0];
 
     if (size === undefined) {
-        return { size: 4 }
+        return { size: OPTION_INDENT_SIZE_4 }
     }
 
-    if (typeof size === 'number'&& (size === 2 || size === 4)) {
+    if (typeof size === 'number'&& (size === OPTION_INDENT_SIZE_2 || size === OPTION_INDENT_SIZE_4)) {
         return { size };
     }
 
@@ -48,7 +68,7 @@ function parseOptions(ruleArguments: any[]): Options | undefined {
 }
 
 interface Options {
-    readonly size: 2 | 4;
+    readonly size: typeof OPTION_INDENT_SIZE_2 | typeof OPTION_INDENT_SIZE_4;
 }
 
 function walk(ctx: Lint.WalkContext<Options>): void {
