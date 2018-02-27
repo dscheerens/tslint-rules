@@ -21,7 +21,7 @@ Using a strict indentation size results in cleaner looking code.
 
 **Options:**
 
-An optional argument for the indentation size can be specified, which should be either 2 or 4.
+An optional argument for the indentation size can be specified, which should be either 2 or 4 (default).
 
 **Option examples:**
 
