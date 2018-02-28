@@ -1,6 +1,6 @@
 {
   "name": "@dscheerens/tslint-rules",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Extra TSLint rules",
   "main": "index.js",
   "scripts": {
