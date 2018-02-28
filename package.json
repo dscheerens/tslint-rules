@@ -8,7 +8,8 @@
     "build-docs": "rimraf docs && ts-node ./scripts/build-docs.ts",
     "lint": "tslint -t stylish -c tslint.json 'src/**/*.ts'",
     "test": "jasmine-ts \"test/**/*.spec.ts\"",
-    "prepare-release": "npm run build && npm run build-docs && cpx README.md build/dist"
+    "prepare-release": "npm run build && cpx README.md build/dist",
+    "release": "npm publish build/dist"
   },
   "keywords": [
     "tslint",

@@ -28,4 +28,4 @@ Afterwards update your `tslint.json` file to enable the rules from this package:
 
 ## Rules
 
-Documentation for the rules can be found in [`docs/rules.md`](docs/rules.md)
+Documentation for the rules can be found in [`docs/rules.md`](https://github.com/dscheerens/tslint-rules/blob/master/docs/rules.md)
