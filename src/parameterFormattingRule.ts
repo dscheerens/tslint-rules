@@ -8,7 +8,15 @@ export class Rule extends Lint.Rules.AbstractRule {
         type: 'style',
         description: 'Checks the formatting of function parameters.',
         optionsDescription: '',
-        options: '',
+        options: {
+            type: 'object',
+            properties: {
+                allowSingleLine: { type: 'boolean' },
+                startOnNewLine: { type: 'boolean' },
+                endWithNewLine: { type: 'boolean' }
+            },
+            additionalProperties: false
+        },
         typescriptOnly: false
     }
 
@@ -25,11 +33,17 @@ export class Rule extends Lint.Rules.AbstractRule {
 }
 
 function parseOptions(ruleArguments: any[]): Options | undefined {
-    // TODO implement this.
+
+    if (!Array.isArray(ruleArguments) || ruleArguments.length > 0 && typeof ruleArguments[0] !== 'object') {
+        return undefined;
+    }
+
+    const options = ruleArguments[0] || {};
+
     return {
-        allowSingleLine: true,
-        startOnNewLine: true,
-        endWithNewLine: true
+        allowSingleLine: typeof options.allowSingleLine === 'boolean' ? options.allowSingleLine : true,
+        startOnNewLine: typeof options.startOnNewLine === 'boolean' ? options.startOnNewLine : false,
+        endWithNewLine: typeof options.endWithNewLine === 'boolean' ? options.endWithNewLine : false
     };
 }
 
@@ -40,6 +54,7 @@ interface Options {
 }
 
 class CheckParameterFormattingWalker extends Lint.AbstractWalker<Options> {
+
     public walk(sourceFile: ts.SourceFile): void {
         ts.forEachChild(sourceFile, (node) => this.walkNode(sourceFile, node));
     }
@@ -53,7 +68,11 @@ class CheckParameterFormattingWalker extends Lint.AbstractWalker<Options> {
 
         const parameterDeclaration = (<ts.SignatureDeclarationBase> node).parameters;
 
-        const parameters = (<ts.SignatureDeclarationBase> node).parameters.map((parameter) => {
+        if (parameterDeclaration.length === 0) {
+            return;
+        }
+
+        const parameters = parameterDeclaration.map((parameter) => {
             const startPosition = parameter.getStart();
             const endPosition = parameter.getEnd();
             const startLine = ts.getLineAndCharacterOfPosition(sourceFile, startPosition).line;
@@ -78,31 +97,46 @@ class CheckParameterFormattingWalker extends Lint.AbstractWalker<Options> {
             return previousLine >= parameter.startLine;
         });
 
-        const firstParameterStartLine = parameters[0] && parameters[0].startLine
+        const firstParameter = parameters[0];
+        const lastParameter = parameters[parameters.length - 1];
         const allParametersOnSameLine = parameters.every(({ startLine, endLine }) =>
-            startLine === firstParameterStartLine && endLine === firstParameterStartLine);
+            startLine === firstParameter.startLine && endLine === firstParameter.startLine);
+        const allParametersOnSameLineAndAllowed = this.options.allowSingleLine && allParametersOnSameLine;
 
-        const firstParameterStartsOnNewLine = false; // TODO implement.
-        const lastParameterEndsWithNewLine = false; // TODO implement.
+        const leadingWhiteSpace = sourceFile.text.substring(parameterDeclaration.pos, firstParameter.startPosition);
+        const trailingWhiteSpace = sourceFile.text.substring(
+            lastParameter.endPosition,
+            findIndexOfFirstNonMatchingCharacter(sourceFile.text, lastParameter.endPosition, (c) => /\s/.test(c) || c === ',')
+        );
+        const firstParameterStartsOnNewLine = containsNewLine(leadingWhiteSpace);
+        const lastParameterEndsWithNewLine = containsNewLine(trailingWhiteSpace);
 
-        if (this.options.startOnNewLine && !firstParameterStartsOnNewLine) {
-            // TODO except when all parameters start on the same line and this option is enabled.
+        if (this.options.startOnNewLine && !firstParameterStartsOnNewLine && !allParametersOnSameLineAndAllowed) {
             this.addFailureAtNode(parameters[0].node, Rule.START_PARAMETER_ON_NEW_LINE_FAILURE_MESSAGE)
         }
 
-        if (!allParametersOnSameLine || !this.options.allowSingleLine) {
+        if (!allParametersOnSameLineAndAllowed) {
             parametersNotStartingOnNewLine.forEach((parameter) => {
                 this.addFailureAtNode(parameter.node, Rule.START_PARAMETER_ON_NEW_LINE_FAILURE_MESSAGE);
             });
         }
 
-        if (this.options.endWithNewLine && lastParameterEndsWithNewLine && parameters.length > 0) {
+        if (this.options.endWithNewLine && lastParameterEndsWithNewLine && parameters.length > 0 && !allParametersOnSameLineAndAllowed) {
             this.addFailureAtNode(parameters[parameters.length - 1].node, Rule.END_PARAMETER_WITH_NEW_LINE_FAILURE_MESSAGE);
         }
-
-        console.log('parameterDeclaration.pos    =', parameterDeclaration.pos);
-        console.log('parameters[0].startPosition = ', parameters[0].startPosition);
-        console.log('parameters[0].startPosition = ', parameters[0].startPosition);
-
     }
+}
+
+function findIndexOfFirstNonMatchingCharacter(source: string, start: number, matches: (character: string) => boolean): number {
+    let index = start;
+
+    while (index < source.length && matches(source.charAt(index))) {
+        index++;
+    }
+
+    return index;
+}
+
+function containsNewLine(source: string): boolean {
+    return source.includes('\n') || source.includes('\r');
 }
