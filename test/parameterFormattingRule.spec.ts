@@ -65,6 +65,33 @@ defineTestCases(Rule.metadata.ruleName, [
                 width: 6
             }
         ]
-    }
+    },
+
+    {
+        description: 'does not require a leading newline for the first parameter by default',
+        source: source(
+            'function thisIsOk(@Alpha() foo: string',
+            '                  @Beta() bar: number,',
+            '                  @Gamma() bar: boolean): void { }'
+        ),
+        failures: []
+    },
+
+    {
+        description: 'checks whether there is a leading newline for the first parameter when the startOnNewLine option is enabled',
+        ruleOptions: [{ startOnNewLine: true }],
+        source: source(
+            'function thisIsNotOk(@Alpha() foo: string',
+            '                     @Beta() bar: number,',
+            '                     @Gamma() bar: boolean): void { }'
+        ),
+        failures: [
+            {
+                message: Rule.START_PARAMETER_ON_NEW_LINE_FAILURE_MESSAGE,
+                startPosition: 21,
+                width: 20
+            }
+        ]
+    },
 
 ]);
