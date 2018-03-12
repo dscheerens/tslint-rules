@@ -20,7 +20,8 @@ const rules$ = readdir(SOURCE_DIRECTORY).pipe(
 );
 
 const ruleDocumentation$ = rules$.pipe(
-    map((rules) => rules
+    map((rules) => [...rules]
+        .sort(compareRuleMetadataByName)
         .map((ruleMetadata) => convertRuleMetataToRuleDocumentation(ruleMetadata)).join('\n\n') + '\n'
     )
 );
@@ -66,4 +67,14 @@ function convertRuleMetataToRuleDocumentation(ruleMetadata: IRuleMetadata): stri
         .filter((section) => typeof section === 'string' || section.body !== undefined)
         .map((section) => typeof section === 'string' ? section : `**${section.title}:**\n\n${section.body!.trim()}`)
         .join('\n\n');
+}
+
+function compareRuleMetadataByName(a: IRuleMetadata, b: IRuleMetadata): number {
+    if (a.ruleName === b.ruleName) {
+        return 0;
+    } else if (a.ruleName > b.ruleName) {
+        return 1;
+    } else {
+        return -1;
+    }
 }

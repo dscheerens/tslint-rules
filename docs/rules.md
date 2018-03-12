@@ -1,3 +1,87 @@
+# `parameter-formatting`
+
+**Description:**
+
+Checks whether parameters are each placed on their own line.
+
+**Details:**
+
+When this rule is enabled, TSLint will check that all parameter declarations are all separated by a new line.
+By default this rule also allows all parameters to be placed on the same line.
+However, this can be disabled through the rule options.
+
+The `parameter-formatting` rule works for every type of language construct that has a parameter declaration, like:
+functions, arrow functions, value accessors, shorthand method definitions in object literals, class constructors, etc...
+
+**Rationale:**
+
+Placing each parameter declaration on a separate line makes it easier to see the definition of individual parameters.
+This improves the readability of your code.
+
+**Options:**
+
+Optionally an object can be provided to control the following settings:
+
+* `allowSingleLine` - Allow all parameters to be placed on a single line. _Defaults to `true`._
+* `startOnNewLine` - Checks whether the first parameter starts on a new line. _Defaults to `false`._
+* `endWithNewLine` - Checks whether the last parameter ends with a new line. _Defaults to `false`._
+
+**NOTE**: The `startOnNewLine` and `endWithNewLine` options are ignored when all parameters are placed on the same line and
+the `allowSingleLine` option is enabled.
+
+**Option examples:**
+
+```json
+{
+    "parameter-formatting": [
+        true
+    ]
+}
+```
+
+```json
+{
+    "parameter-formatting": [
+        true,
+        {
+            "allowSingleLine": false
+        }
+    ]
+}
+```
+
+```json
+{
+    "parameter-formatting": [
+        true,
+        {
+            "startOnNewLine": true,
+            "endWithNewLine": true
+        }
+    ]
+}
+```
+
+**Options schema:**
+
+```json
+{
+    "type": "object",
+    "properties": {
+        "allowSingleLine": {
+            "type": "boolean"
+        },
+        "startOnNewLine": {
+            "type": "boolean"
+        },
+        "endWithNewLine": {
+            "type": "boolean"
+        }
+    },
+    "additionalProperties": false
+}
+```
+
 # `strict-indent-size`
 
 **Description:**
