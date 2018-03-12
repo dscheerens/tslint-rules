@@ -3,6 +3,13 @@
         "./build/dist"
     ],
     "rules": {
-        "strict-indent-size": true
+        "strict-indent-size": true,
+        "parameter-formatting": [
+            true,
+            {
+                "startOnNewLine": true,
+                "endWithNewLine": true
+            }
+        ]
     }
 }
