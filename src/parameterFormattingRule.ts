@@ -6,11 +6,14 @@ export class Rule extends Lint.Rules.AbstractRule {
     public static metadata: Lint.IRuleMetadata = {
         ruleName: 'parameter-formatting',
         type: 'style',
-        description: 'Checks whether function parameters are each placed on their own line.',
+        description: 'Checks whether parameters are each placed on their own line.',
         descriptionDetails: Lint.Utils.dedent`
             When this rule is enabled, TSLint will check that all parameter declarations are all separated by a new line.
             By default this rule also allows all parameters to be placed on the same line.
-            This, however, can be disabled through the rule options.
+            However, this can be disabled through the rule options.
+
+            The \`parameter-formatting\` rule works for every type of language construct that has a parameter declaration, like:
+            functions, arrow functions, value accessors, shorthand method definitions in object literals, class constructors, etc...
         `,
         optionsDescription: Lint.Utils.dedent`
             Optionally an object can be provided to control the following settings:

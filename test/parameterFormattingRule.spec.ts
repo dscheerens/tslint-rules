@@ -99,7 +99,7 @@ defineTestCases(Rule.metadata.ruleName, [
         source: source(
             'function thisIsOk(@Alpha() foo: string,',
             '                  @Beta() bar: number,',
-            '                  @Gamma() bar: boolean): void { }'
+            '                  @Gamma() baz: boolean): void { }'
         ),
         failures: []
     },
@@ -110,7 +110,7 @@ defineTestCases(Rule.metadata.ruleName, [
         source: source(
             'function thisIsNotOk(@Alpha() foo: string,',
             '                     @Beta() bar: number,',
-            '                     @Gamma() bar: boolean): void { }'
+            '                     @Gamma() baz: boolean): void { }'
         ),
         failures: [
             {
@@ -124,7 +124,7 @@ defineTestCases(Rule.metadata.ruleName, [
     {
         description: 'does not check for a leading and trailing newline when all parameters are on the same line',
         ruleOptions: [{ startOnNewLine: true, endWithNewLine: true }],
-        source: 'function thisIsOk(@Alpha() foo: string, @Beta() bar: number, @Gamma() bar: boolean): void { }',
+        source: 'function thisIsOk(@Alpha() foo: string, @Beta() bar: number, @Gamma() baz: boolean): void { }',
         failures: []
     },
 
