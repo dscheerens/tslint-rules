@@ -70,7 +70,7 @@ defineTestCases(Rule.metadata.ruleName, [
     {
         description: 'does not require a leading newline for the first parameter by default',
         source: source(
-            'function thisIsOk(@Alpha() foo: string',
+            'function thisIsOk(@Alpha() foo: string,',
             '                  @Beta() bar: number,',
             '                  @Gamma() bar: boolean): void { }'
         ),
@@ -81,7 +81,7 @@ defineTestCases(Rule.metadata.ruleName, [
         description: 'checks whether there is a leading newline for the first parameter when the startOnNewLine option is enabled',
         ruleOptions: [{ startOnNewLine: true }],
         source: source(
-            'function thisIsNotOk(@Alpha() foo: string',
+            'function thisIsNotOk(@Alpha() foo: string,',
             '                     @Beta() bar: number,',
             '                     @Gamma() bar: boolean): void { }'
         ),
@@ -93,5 +93,52 @@ defineTestCases(Rule.metadata.ruleName, [
             }
         ]
     },
+
+    {
+        description: 'does not require a trailing newline for the last parameter by default',
+        source: source(
+            'function thisIsOk(@Alpha() foo: string,',
+            '                  @Beta() bar: number,',
+            '                  @Gamma() bar: boolean): void { }'
+        ),
+        failures: []
+    },
+
+    {
+        description: 'checks whether there is a trailing newline for the last parameter when the endWithNewLine option is enabled',
+        ruleOptions: [{ endWithNewLine: true }],
+        source: source(
+            'function thisIsNotOk(@Alpha() foo: string,',
+            '                     @Beta() bar: number,',
+            '                     @Gamma() bar: boolean): void { }'
+        ),
+        failures: [
+            {
+                message: Rule.END_PARAMETER_WITH_NEW_LINE_FAILURE_MESSAGE,
+                startPosition: 106,
+                width: 21
+            }
+        ]
+    },
+
+    {
+        description: 'does not check for a leading and trailing newline when all parameters are on the same line',
+        ruleOptions: [{ startOnNewLine: true, endWithNewLine: true }],
+        source: 'function thisIsOk(@Alpha() foo: string, @Beta() bar: number, @Gamma() bar: boolean): void { }',
+        failures: []
+    },
+
+    {
+        description: 'supports a trailing comma when checking for a trailing newline',
+        ruleOptions: [{ startOnNewLine: true, endWithNewLine: true }],
+        source: source(
+            'function thisIsOk(',
+            '    @Multi() @Optional() foo: string,',
+            '    bar: number,',
+            '    baz: boolean    ,   ',
+            '): void { }'
+        ),
+        failures: []
+    }
 
 ]);

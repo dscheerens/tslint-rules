@@ -6,8 +6,26 @@ export class Rule extends Lint.Rules.AbstractRule {
     public static metadata: Lint.IRuleMetadata = {
         ruleName: 'parameter-formatting',
         type: 'style',
-        description: 'Checks the formatting of function parameters.',
-        optionsDescription: '',
+        description: 'Checks whether function parameters are each placed on their own line.',
+        descriptionDetails: Lint.Utils.dedent`
+            When this rule is enabled, TSLint will check that all parameter declarations are all separated by a new line.
+            By default this rule also allows all parameters to be placed on the same line.
+            This, however, can be disabled through the rule options.
+        `,
+        optionsDescription: Lint.Utils.dedent`
+            Optionally an object can be provided to control the following settings:
+
+            * \`allowSingleLine\` - Allow all parameters to be placed on a single line. _Defaults to \`true\`._
+            * \`startOnNewLine\` - Checks whether the first parameter starts on a new line. _Defaults to \`false\`._
+            * \`endWithNewLine\` - Checks whether the last parameter ends with a new line. _Defaults to \`false\`._
+
+            **NOTE**: The \`startOnNewLine\` and \`endWithNewLine\` options are ignored when all parameters are placed on the same line and
+            the \`allowSingleLine\` option is enabled.
+        `,
+        rationale: Lint.Utils.dedent`
+            Placing each parameter declaration on a separate line makes it easier to see the definition of individual parameters.
+            This improves the readability of your code.
+        `,
         options: {
             type: 'object',
             properties: {
@@ -17,6 +35,11 @@ export class Rule extends Lint.Rules.AbstractRule {
             },
             additionalProperties: false
         },
+        optionExamples: [
+            [true],
+            [true, { allowSingleLine: false }],
+            [true, { startOnNewLine: true, endWithNewLine: true }]
+        ],
         typescriptOnly: false
     }
 
@@ -112,7 +135,7 @@ class CheckParameterFormattingWalker extends Lint.AbstractWalker<Options> {
         const lastParameterEndsWithNewLine = containsNewLine(trailingWhiteSpace);
 
         if (this.options.startOnNewLine && !firstParameterStartsOnNewLine && !allParametersOnSameLineAndAllowed) {
-            this.addFailureAtNode(parameters[0].node, Rule.START_PARAMETER_ON_NEW_LINE_FAILURE_MESSAGE)
+            this.addFailureAtNode(firstParameter.node, Rule.START_PARAMETER_ON_NEW_LINE_FAILURE_MESSAGE)
         }
 
         if (!allParametersOnSameLineAndAllowed) {
@@ -121,8 +144,8 @@ class CheckParameterFormattingWalker extends Lint.AbstractWalker<Options> {
             });
         }
 
-        if (this.options.endWithNewLine && lastParameterEndsWithNewLine && parameters.length > 0 && !allParametersOnSameLineAndAllowed) {
-            this.addFailureAtNode(parameters[parameters.length - 1].node, Rule.END_PARAMETER_WITH_NEW_LINE_FAILURE_MESSAGE);
+        if (this.options.endWithNewLine && !lastParameterEndsWithNewLine && parameters.length > 0 && !allParametersOnSameLineAndAllowed) {
+            this.addFailureAtNode(lastParameter.node, Rule.END_PARAMETER_WITH_NEW_LINE_FAILURE_MESSAGE);
         }
     }
 }
