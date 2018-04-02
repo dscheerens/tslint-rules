@@ -92,7 +92,7 @@ defineTestCases(Rule.metadata.ruleName, [
     },
 
     {
-        description: 'ignores indentation of lines within a string template expression',
+        description: 'ignores indentation of lines within a template literal string (1)',
         source: source(
             'const foo = `1 + 2 = ${',
             ' 1 + 2',
@@ -107,6 +107,16 @@ defineTestCases(Rule.metadata.ruleName, [
                 width: 3
             }
         ]
+    },
+
+    {
+        description: 'ignores indentation of lines within a template literal string (2)',
+        source: source(
+            'const optionsDescription = `',
+            '  Bla bla bla',
+            '`;'
+        ),
+        failures: []
     }
 
 ]);
