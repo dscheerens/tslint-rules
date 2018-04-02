@@ -1,3 +1,83 @@
+# `grouped-imports`
+
+**Description:**
+
+Checks whether imports are logically grouped.
+
+**Details:**
+
+When this rule is enabled it will check if import statements are grouped together with respect to the module scope
+(e.g. `@angular`).
+
+The rule can also be configured to check that all third party (libraries) are placed before or after first party (your own code)
+imports.
+
+**Rationale:**
+
+Grouping imports makes it easier to find related imports.
+
+**Options:**
+
+An optional argument can be specified to control the value of the following settings:
+
+* `groupByModuleScope` - Checks whether imports from the same module scope are grouped together. _Defaults to `true`._
+* `firstVsThirdPartyOrder` - Checks whether third party modules are placed before or after first party modules.
+  Valid options are either `third-party-modules-first` or `third-party-modules-last`. _Disabled by default._
+
+**Option examples:**
+
+```json
+{
+    "grouped-imports": [
+        true
+    ]
+}
+```
+
+```json
+{
+    "grouped-imports": [
+        true,
+        {
+            "firstVsThirdPartyOrder": "third-party-modules-first"
+        }
+    ]
+}
+```
+
+```json
+{
+    "grouped-imports": [
+        true,
+        {
+            "groupByModuleScope": false,
+            "firstVsThirdPartyOrder": "third-party-modules-last"
+        }
+    ]
+}
+```
+
+**Options schema:**
+
+```json
+{
+    "type": "object",
+    "properties": {
+        "groupByModuleScope": {
+            "type": "boolean"
+        },
+        "firstVsThirdPartyOrder": {
+            "type": "string",
+            "enum": [
+                "third-party-modules-first",
+                "third-party-modules-last"
+            ]
+        }
+    },
+    "additionalProperties": false
+}
+```
+
 # `parameter-formatting`
 
 **Description:**

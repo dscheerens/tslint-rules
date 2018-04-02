@@ -3,13 +3,20 @@
         "./build/dist"
     ],
     "rules": {
-        "strict-indent-size": true,
+        "grouped-imports": [
+            true,
+            {
+                "groupByModuleScope": true,
+                "firstVsThirdPartyOrder": "third-party-modules-first"
+            }
+        ],
         "parameter-formatting": [
             true,
             {
                 "startOnNewLine": true,
                 "endWithNewLine": true
             }
-        ]
+        ],
+        "strict-indent-size": true
     }
 }
