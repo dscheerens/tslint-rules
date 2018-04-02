@@ -175,7 +175,7 @@ When this rule is enabled the indentation length for each line is checked
 by verifying that it is a multiple of either 2 or 4 spaces.
 The desired indentation size of 2 or 4 spaces can be set through the options of this rule.
 
-Indentation is not checked for lines that are part of a comment or template strings.
+Indentation is not checked for lines that are part of a comment or template literal strings.
 
 **NOTE**: This rule assumes that indentation is done using spaces. It will not check for tabs.
 

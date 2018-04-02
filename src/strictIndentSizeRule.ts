@@ -17,7 +17,7 @@ export class Rule extends Lint.Rules.AbstractRule {
             by verifying that it is a multiple of either 2 or 4 spaces.
             The desired indentation size of 2 or 4 spaces can be set through the options of this rule.
 
-            Indentation is not checked for lines that are part of a comment or template strings.
+            Indentation is not checked for lines that are part of a comment or template literal strings.
 
             **NOTE**: This rule assumes that indentation is done using spaces. It will not check for tabs.
         `,
@@ -84,13 +84,13 @@ function walk(ctx: Lint.WalkContext<Options>): void {
 
             const indentationSize = indentation.length;
 
-            const token = getTokenAtPosition(sourceFile, position)!;//
+            const token = getTokenAtPosition(sourceFile, position)!;
 
             return { position, indentationSize, token }
         })
         .filter(({ position, indentationSize, token }) =>
             !isPositionInComment(sourceFile, position, token) &&
-            !isWithinKind(token, ts.SyntaxKind.TemplateExpression) &&
+            !isWithinTemplateLiteral(token) &&
             indentationSize % options.size > 0
         )
         .forEach(({ position, indentationSize }) => {
@@ -98,11 +98,15 @@ function walk(ctx: Lint.WalkContext<Options>): void {
         });
 }
 
-function isWithinKind(token: ts.Node, kind: ts.SyntaxKind): boolean {
-    let tokenToCheck: ts.Node | undefined = token;
+function isWithinTemplateLiteral(node: ts.Node) {
+    return isWithinKind(node, ts.SyntaxKind.TemplateExpression, ts.SyntaxKind.NoSubstitutionTemplateLiteral);
+}
+
+function isWithinKind(node: ts.Node, ...kinds: ts.SyntaxKind[]): boolean {
+    let tokenToCheck: ts.Node | undefined = node;
 
     while (tokenToCheck !== undefined) {
-        if (tokenToCheck.kind === kind) {
+        if (kinds.some((kind) => kind === tokenToCheck!.kind)) {
             return true;
         }
 
