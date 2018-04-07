@@ -9,6 +9,7 @@ defineTestCases(Rule.metadata.ruleName, [
         source: source(
             'import { bla } from "./lorem/ipsum"',
             'import { foo, bar, baz } from "example-module"',
+            'import * as something from "@scoped/module"',
             'import { consumer } from "../models/consumer"'
         ),
         failures: [
@@ -16,6 +17,11 @@ defineTestCases(Rule.metadata.ruleName, [
                 message: Rule.THIRD_PARTY_IMPORT_FIRST_FAILURE_MESSAGE,
                 startPosition: 36,
                 width: 46
+            },
+            {
+                message: Rule.THIRD_PARTY_IMPORT_FIRST_FAILURE_MESSAGE,
+                startPosition: 83,
+                width: 43
             }
         ]
     },
@@ -26,12 +32,18 @@ defineTestCases(Rule.metadata.ruleName, [
         source: source(
             'import { bla } from "./lorem/ipsum"',
             'import { foo, bar, baz } from "example-module"',
-            'import { consumer } from "../models/consumer"'
+            'import { consumer } from "../models/consumer"',
+            'import { producer } from "../models/producer"'
         ),
         failures: [
             {
                 message: Rule.FIRST_PARTY_IMPORT_FIRST_FAILURE_MESSAGE,
                 startPosition: 83,
+                width: 45
+            },
+            {
+                message: Rule.FIRST_PARTY_IMPORT_FIRST_FAILURE_MESSAGE,
+                startPosition: 129,
                 width: 45
             }
         ]
@@ -91,6 +103,21 @@ defineTestCases(Rule.metadata.ruleName, [
                 message: Rule.THIRD_PARTY_IMPORT_FIRST_FAILURE_MESSAGE,
                 startPosition: 91,
                 width: 52
+            },
+            {
+                message: Rule.THIRD_PARTY_IMPORT_FIRST_FAILURE_MESSAGE,
+                startPosition: 144,
+                width: 48
+            },
+            {
+                message: Rule.THIRD_PARTY_IMPORT_FIRST_FAILURE_MESSAGE,
+                startPosition: 193,
+                width: 44
+            },
+            {
+                message: Rule.THIRD_PARTY_IMPORT_FIRST_FAILURE_MESSAGE,
+                startPosition: 238,
+                width: 35
             },
             {
                 message: Rule.GROUP_SCOPED_MODULE_FAILURE_MESSAGE,

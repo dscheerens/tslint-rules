@@ -94,7 +94,7 @@ function parseOptions(ruleArguments: any[]): Options | undefined {
     };
 }
 
-enum ModuleSpecifierType {
+enum ModuleType {
     FIRST_PARTY = 'FIRST_PARTY',
     THIRD_PARTY = 'THIRD_PARTY'
 }
@@ -106,25 +106,34 @@ function walk(ctx: Lint.WalkContext<Options>): void {
         .map((importDeclaration: ts.ImportDeclaration) => importDeclaration)
         .filter((importDeclaration) => isStringLiteral(importDeclaration.moduleSpecifier))
 
-    let lastModuleSpecifierType: ModuleSpecifierType | undefined;
+    let expectedModuleType: ModuleType | undefined;
     let lastUsedModuleScope: string | undefined;
     const moduleScopesUsed = new Set<string>();
 
     imports.forEach((importDeclaration, index) => {
         const moduleSpecifier = (importDeclaration.moduleSpecifier as ts.StringLiteral).text;
 
-        const moduleSpecifierType = moduleSpecifier.startsWith('.') ? ModuleSpecifierType.FIRST_PARTY : ModuleSpecifierType.THIRD_PARTY;
+        const moduleType = moduleSpecifier.startsWith('.') ? ModuleType.FIRST_PARTY : ModuleType.THIRD_PARTY;
         const moduleScope = getModuleSpecifierScope(moduleSpecifier);
 
-        if (index > 0 && ctx.options.firstVsThirdPartyOrder !== undefined && lastModuleSpecifierType !== moduleSpecifierType) {
-            if (moduleSpecifierType === ModuleSpecifierType.FIRST_PARTY &&
-                ctx.options.firstVsThirdPartyOrder === FirstVsThirdPartyOrder.THIRD_PARTY_MODULES_LAST) {
-                ctx.addFailureAtNode(importDeclaration, Rule.FIRST_PARTY_IMPORT_FIRST_FAILURE_MESSAGE);
-            }
-            if (moduleSpecifierType === ModuleSpecifierType.THIRD_PARTY &&
-                ctx.options.firstVsThirdPartyOrder === FirstVsThirdPartyOrder.THIRD_PARTY_MODULES_FIRST) {
-                ctx.addFailureAtNode(importDeclaration, Rule.THIRD_PARTY_IMPORT_FIRST_FAILURE_MESSAGE);
-            }
+        const moduleTypeSectionSwitched = expectedModuleType !== moduleType && (
+            ctx.options.firstVsThirdPartyOrder === FirstVsThirdPartyOrder.THIRD_PARTY_MODULES_FIRST &&
+                moduleType === ModuleType.FIRST_PARTY ||
+            ctx.options.firstVsThirdPartyOrder === FirstVsThirdPartyOrder.THIRD_PARTY_MODULES_LAST &&
+                moduleType === ModuleType.THIRD_PARTY
+        );
+
+        if (expectedModuleType === undefined || moduleTypeSectionSwitched) {
+            expectedModuleType = moduleType;
+        }
+
+        if (ctx.options.firstVsThirdPartyOrder !== undefined && expectedModuleType !== moduleType) {
+            ctx.addFailureAtNode(
+                importDeclaration,
+                moduleType === ModuleType.FIRST_PARTY
+                ? Rule.FIRST_PARTY_IMPORT_FIRST_FAILURE_MESSAGE
+                : Rule.THIRD_PARTY_IMPORT_FIRST_FAILURE_MESSAGE
+            );
         }
 
         if (index > 0 && ctx.options.groupByModuleScope && moduleScope !== undefined &&
@@ -132,7 +141,6 @@ function walk(ctx: Lint.WalkContext<Options>): void {
             ctx.addFailureAtNode(importDeclaration, Rule.GROUP_SCOPED_MODULE_FAILURE_MESSAGE);
         }
 
-        lastModuleSpecifierType = moduleSpecifierType;
         lastUsedModuleScope = moduleScope;
 
         if (moduleScope !== undefined) {
