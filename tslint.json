@@ -6,7 +6,7 @@
         "grouped-imports": [
             true,
             {
-                "groupByModuleScope": true,
+                "groupThirdPartyModules": true,
                 "firstVsThirdPartyOrder": "third-party-modules-first"
             }
         ],

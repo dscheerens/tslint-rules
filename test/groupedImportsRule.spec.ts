@@ -50,43 +50,65 @@ defineTestCases(Rule.metadata.ruleName, [
     },
 
     {
-        description: 'can check if third party imports with the same scope are grouped together (1)',
-        ruleOptions: [{ groupByModuleScope: true }],
+        description: 'can check if third party imports are grouped by module root',
+        ruleOptions: [{ groupThirdPartyModules: true }],
         source: source(
-            'import { bla } from "@lorem/ipsum"',
-            'import { foo, bar, baz } from "@example/module"',
-            'import { crc32 } from "@lorem/checksum"'
+            'import { Component } from "@angular/core"',
+            'import { Observable } from "rxjs/Observable"',
+            'import { async } from "@angular/core/testing"',
+            'import "rxjs/add/operator/map"',
+            'import { HttpClient } from "@angular/common/http"',
+            'import { foo } from "example"',
+            'import { bar } from "example"',
+            'import { banana } from "../../examples/fruits"',
+            'import { baz } from "example"'
         ),
         failures: [
             {
-                message: Rule.GROUP_SCOPED_MODULE_FAILURE_MESSAGE,
-                startPosition: 83,
-                width: 39
+                message: Rule.GROUP_MODULE_ROOT_FAILURE_MESSAGE('@angular/core'),
+                startPosition: 87,
+                width: 45
+            },
+            {
+                message: Rule.GROUP_MODULE_ROOT_FAILURE_MESSAGE('rxjs'),
+                startPosition: 133,
+                width: 30
+            },
+            {
+                message: Rule.GROUP_SCOPED_MODULE_FAILURE_MESSAGE('@angular'),
+                startPosition: 164,
+                width: 49
+            },
+            {
+                message: Rule.GROUP_MODULE_ROOT_FAILURE_MESSAGE('example'),
+                startPosition: 321,
+                width: 29
             }
         ]
     },
 
     {
-        description: 'can check if third party imports with the same scope are grouped together (2)',
-        ruleOptions: [{ groupByModuleScope: true }],
+        description: 'does not report false positives when checking if third party imports are grouped by module root',
+        ruleOptions: [{ groupThirdPartyModules: true }],
         source: source(
-            'import { bla } from "@lorem/ipsum"',
-            'import { foo, bar, baz } from "../../example/module"',
-            'import { crc32 } from "@lorem/checksum"'
+            'import { Component } from "@angular/core"',
+            'import { async } from "@angular/core/testing"',
+            'import { HttpClient } from "@angular/common/http"',
+            'import { Observable } from "rxjs/Observable"',
+            'import "rxjs/add/operator/map"',
+            'import { foo } from "example"',
+            'import { bar } from "example"',
+            'import { baz } from "example"',
+            'import { banana } from "../../examples/fruits"'
         ),
         failures: [
-            {
-                message: Rule.GROUP_SCOPED_MODULE_FAILURE_MESSAGE,
-                startPosition: 88,
-                width: 39
-            }
         ]
     },
 
     {
         description: 'can check for both options',
         ruleOptions: [{
-            groupByModuleScope: true,
+            groupThirdPartyModules: true,
             firstVsThirdPartyOrder: 'third-party-modules-first'
         }],
         source: source(
@@ -120,7 +142,7 @@ defineTestCases(Rule.metadata.ruleName, [
                 width: 35
             },
             {
-                message: Rule.GROUP_SCOPED_MODULE_FAILURE_MESSAGE,
+                message: Rule.GROUP_SCOPED_MODULE_FAILURE_MESSAGE('@edible'),
                 startPosition: 238,
                 width: 35
             }
@@ -130,7 +152,7 @@ defineTestCases(Rule.metadata.ruleName, [
     {
         description: 'does not report any errors works when both options are disabled',
         ruleOptions: [{
-            groupByModuleScope: false,
+            groupThirdPartyModules: false,
             firstVsThirdPartyOrder: undefined
         }],
         source: source(
@@ -146,7 +168,7 @@ defineTestCases(Rule.metadata.ruleName, [
     },
 
     {
-        description: 'by default only requires imports to be grouped by scope',
+        description: 'by default only requires imports to be grouped by module root',
         source: source(
             'import { foo, bar, baz } from "example-module"',
             'import { chef } from "../services/producer"',
@@ -158,7 +180,7 @@ defineTestCases(Rule.metadata.ruleName, [
         ),
         failures: [
             {
-                message: Rule.GROUP_SCOPED_MODULE_FAILURE_MESSAGE,
+                message: Rule.GROUP_SCOPED_MODULE_FAILURE_MESSAGE('@edible'),
                 startPosition: 238,
                 width: 35
             }

@@ -2,12 +2,13 @@
 
 **Description:**
 
-Checks whether imports are logically grouped.
+Checks whether third party imports are grouped by module root.
 
 **Details:**
 
-When this rule is enabled it will check if import statements are grouped together with respect to the module scope
-(e.g. `@angular`).
+When this rule is enabled it will check if import statements for third party modules are grouped together with respect to the
+module root and scope (if present).
+This will require for example all imports from `rxjs` to be placed directly after one another.
 
 The rule can also be configured to check that all third party (libraries) are placed before or after first party (your own code)
 imports.
@@ -20,9 +21,11 @@ Grouping imports makes it easier to find related imports.
 
 An optional argument can be specified to control the value of the following settings:
 
-* `groupByModuleScope` - Checks whether imports from the same module scope are grouped together. _Defaults to `true`._
+* `groupThirdPartyModules` - Checks whether import statements for the same third party are grouped together.
+  _Defaults to `true`._
 * `firstVsThirdPartyOrder` - Checks whether third party modules are placed before or after first party modules.
-  Valid options are either `third-party-modules-first` or `third-party-modules-last`. _Disabled by default._
+  Valid options are either `third-party-modules-first` or `third-party-modules-last`.
+  _Disabled by default._
 
 **Option examples:**
 
@@ -50,7 +53,7 @@ An optional argument can be specified to control the value of the following sett
     "grouped-imports": [
         true,
         {
-            "groupByModuleScope": false,
+            "groupThirdPartyModules": false,
             "firstVsThirdPartyOrder": "third-party-modules-last"
         }
     ]
@@ -63,7 +66,7 @@ An optional argument can be specified to control the value of the following sett
 {
     "type": "object",
     "properties": {
-        "groupByModuleScope": {
+        "groupThirdPartyModules": {
             "type": "boolean"
         },
         "firstVsThirdPartyOrder": {
