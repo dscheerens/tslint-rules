@@ -1,7 +1,7 @@
 import { defineTestCases, source } from './utils';
 import { Rule } from '../src/parameterFormattingRule';
 
-defineTestCases(Rule.metadata.ruleName, [
+defineTestCases(Rule.metadata, [
 
     {
         description: 'allows single line parameter declarations by default',

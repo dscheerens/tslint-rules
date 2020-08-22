@@ -1,7 +1,7 @@
 import { defineTestCases, source } from './utils';
 import { Rule } from '../src/strictIndentSizeRule';
 
-defineTestCases(Rule.metadata.ruleName, [
+defineTestCases(Rule.metadata, [
 
     {
         description: 'succeeds for indents valid indents when configured for an indent size of 2',

@@ -1,7 +1,7 @@
 import { defineTestCases, source } from './utils';
 import { Rule } from '../src/groupedImportsRule';
 
-defineTestCases(Rule.metadata.ruleName, [
+defineTestCases(Rule.metadata, [
 
     {
         description: 'can check if third party imports are placed before first party imports',

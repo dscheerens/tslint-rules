@@ -1,16 +1,66 @@
-import * as fs from 'fs';
+import { MakeDirectoryOptions, PathLike, mkdir, readdir, writeFile } from 'fs';
+import { Observable, Subscriber } from 'rxjs';
 
-import { Observable } from 'rxjs/Observable'
-import { bindNodeCallback } from 'rxjs/observable/bindNodeCallback';
+export function readDir$(path: PathLike): Observable<string[]> {
+    return new Observable((subscriber: Subscriber<string[]>) => {
+        let canceled = false;
 
-export const readdir = bindNodeCallback(fs.readdir);
+        readdir(path, (error, data) => {
+            if (canceled) {
+                return;
+            }
+            if (error) {
+                subscriber.error(error);
+            } else {
+                subscriber.next(data);
+                subscriber.complete();
+            }
+        });
 
-export const mkdir
-    : (path: fs.PathLike) => Observable<void>
-    = bindNodeCallback(fs.mkdir) as any;
+        return () => canceled = true;
+    });
+}
 
-export type WriteFileOptions = { encoding?: string | null; mode?: number; flag?: string } | string | null;
+export function mkdir$(path: PathLike, options?: number | string | MakeDirectoryOptions | null): Observable<void> {
+    return new Observable((subscriber: Subscriber<void>) => {
+        let canceled = false;
 
-export const writeFile
-    : (path: fs.PathLike | number, data: string | Buffer | Uint8Array, options?: WriteFileOptions) => Observable<void>
-    = bindNodeCallback(fs.writeFile) as any;
+        mkdir(path, options, (error) => {
+            if (canceled) {
+                return;
+            }
+            if (error) {
+                subscriber.error(error);
+            } else {
+                subscriber.next(undefined);
+                subscriber.complete();
+            }
+        });
+
+        return () => canceled = true;
+    });
+}
+
+export function writeFile$(path: PathLike | number, content: string, encoding?: string): Observable<void>;
+export function writeFile$(path: PathLike | number, content: Buffer): Observable<void>;
+export function writeFile$(path: PathLike | number, content: string | Buffer, encoding?: string): Observable<void> {
+    const contentEncoding = content instanceof Buffer ? null : encoding || 'UTF8';
+
+    return new Observable((subscriber: Subscriber<void>) => {
+        let canceled = false;
+
+        writeFile(path, content, { encoding: contentEncoding }, (error) => {
+            if (canceled) {
+                return;
+            }
+            if (error) {
+                subscriber.error(error);
+            } else {
+                subscriber.next(undefined);
+                subscriber.complete();
+            }
+        });
+
+        return () => canceled = true;
+    });
+}

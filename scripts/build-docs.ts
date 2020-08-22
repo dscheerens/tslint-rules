@@ -1,4 +1,4 @@
-import { mkdir, readdir, writeFile } from './util/rx-fs';
+import { mkdir$, readDir$, writeFile$ } from './util/rx-fs';
 
 import { IRuleMetadata, RuleConstructor } from 'tslint';
 
@@ -10,7 +10,7 @@ const RULES_DOCUMENTATION_FILE = 'rules.md';
 
 const RULE_FILE_NAME_PATTERN = /Rule.ts$/;
 
-const rules$ = readdir(SOURCE_DIRECTORY).pipe(
+const rules$ = readDir$(SOURCE_DIRECTORY).pipe(
     map((fileNames) => fileNames
         .filter((fileName) => RULE_FILE_NAME_PATTERN.test(fileName))
         .map((fileName) => require.resolve('../' + SOURCE_DIRECTORY + '/' + fileName))
@@ -28,12 +28,12 @@ const ruleDocumentation$ = rules$.pipe(
 
 const rulesDocumentationFilePath = DOCUMENTATION_DIRECTORY + '/' + RULES_DOCUMENTATION_FILE;
 
-const createDocsDirectory$ = mkdir(DOCUMENTATION_DIRECTORY);
+const createDocsDirectory$ = mkdir$(DOCUMENTATION_DIRECTORY);
 
 ruleDocumentation$
     .pipe(
         zip(createDocsDirectory$),
-        mergeMap(([ruleDocumentation]) => writeFile(rulesDocumentationFilePath, ruleDocumentation))
+        mergeMap(([ruleDocumentation]) => writeFile$(rulesDocumentationFilePath, ruleDocumentation))
     )
     .subscribe({
         next: () => console.log(`Documentation has been succesfully written to ${rulesDocumentationFilePath}`),

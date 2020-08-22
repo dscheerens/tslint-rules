@@ -82,13 +82,13 @@ interface Options {
 class CheckParameterFormattingWalker extends Lint.AbstractWalker<Options> {
 
     public walk(sourceFile: ts.SourceFile): void {
-        ts.forEachChild(sourceFile, (node) => this.walkNode(sourceFile, node));
+        this.walkNode(sourceFile);
     }
 
-    private walkNode(sourceFile: ts.SourceFile, node: ts.Node): void {
+    private walkNode(node: ts.Node): void {
 
         if (!node.hasOwnProperty('parameters')) {
-            ts.forEachChild(node, (childNode) => this.walkNode(sourceFile, childNode))
+            ts.forEachChild(node, (childNode) => this.walkNode(childNode))
             return;
         }
 
@@ -101,8 +101,8 @@ class CheckParameterFormattingWalker extends Lint.AbstractWalker<Options> {
         const parameters = parameterDeclaration.map((parameter) => {
             const startPosition = parameter.getStart();
             const endPosition = parameter.getEnd();
-            const startLine = ts.getLineAndCharacterOfPosition(sourceFile, startPosition).line;
-            const endLine = ts.getLineAndCharacterOfPosition(sourceFile, endPosition).line;
+            const startLine = ts.getLineAndCharacterOfPosition(this.sourceFile, startPosition).line;
+            const endLine = ts.getLineAndCharacterOfPosition(this.sourceFile, endPosition).line;
 
             return {
                 startPosition,
@@ -129,10 +129,10 @@ class CheckParameterFormattingWalker extends Lint.AbstractWalker<Options> {
             startLine === firstParameter.startLine && endLine === firstParameter.startLine);
         const allParametersOnSameLineAndAllowed = this.options.allowSingleLine && allParametersOnSameLine;
 
-        const leadingWhiteSpace = sourceFile.text.substring(parameterDeclaration.pos, firstParameter.startPosition);
-        const trailingWhiteSpace = sourceFile.text.substring(
+        const leadingWhiteSpace = this.sourceFile.text.substring(parameterDeclaration.pos, firstParameter.startPosition);
+        const trailingWhiteSpace = this.sourceFile.text.substring(
             lastParameter.endPosition,
-            findIndexOfFirstNonMatchingCharacter(sourceFile.text, lastParameter.endPosition, (c) => /\s/.test(c) || c === ',')
+            findIndexOfFirstNonMatchingCharacter(this.sourceFile.text, lastParameter.endPosition, (c) => /\s/.test(c) || c === ',')
         );
         const firstParameterStartsOnNewLine = containsNewLine(leadingWhiteSpace);
         const lastParameterEndsWithNewLine = containsNewLine(trailingWhiteSpace);

@@ -4,11 +4,11 @@
   "description": "Extra TSLint rules",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf build/dist && tsc -p src && cpx package.json build/dist",
+    "build": "rimraf build/dist && tsc -p src && copyfiles package.json build/dist",
     "build-docs": "rimraf docs && ts-node ./scripts/build-docs.ts",
     "lint": "tslint -t stylish -c tslint.json 'src/**/*.ts'",
-    "test": "jasmine-ts \"test/**/*.spec.ts\"",
-    "prepare-release": "npm run build && cpx README.md build/dist",
+    "test": "jasmine-ts --config=jasmine.json",
+    "prepare-release": "npm run build && copyfiles README.md build/dist",
     "release": "npm publish build/dist"
   },
   "keywords": [
@@ -18,23 +18,27 @@
     "rule",
     "rules"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dscheerens/tslint-rules"
+  },
   "author": "Daan Scheerens",
   "license": "MIT",
   "peerDependencies": {
-    "tslint": "^5.0.0"
+    "tslint": ">=6.0.0"
   },
   "devDependencies": {
-    "@types/jasmine": "^2.8.6",
-    "@types/node": "^8.9.4",
-    "cpx": "^1.5.0",
-    "jasmine": "^3.0.0",
-    "jasmine-ts": "^0.2.1",
-    "rimraf": "^2.6.2",
-    "rxjs": "^5.5.6",
-    "ts-node": "^5.0.0",
-    "tslib": "^1.9.0",
-    "tslint": "^5.9.1",
-    "tsutils": "^2.21.2",
-    "typescript": "^2.7.2"
+    "@types/jasmine": "^3.5.0",
+    "@types/node": "^12.11.1",
+    "copyfiles": "^2.3.0",
+    "jasmine": "^3.5.0",
+    "jasmine-ts": "^0.3.0",
+    "rimraf": "^3.0.2",
+    "rxjs": "^6.6.0",
+    "ts-node": "^9.0.0",
+    "tslib": "^1.13.0",
+    "tslint": "^6.1.0",
+    "tsutils": "^2.29.0",
+    "typescript": "^3.9.7"
   }
 }
