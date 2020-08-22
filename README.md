@@ -1,5 +1,4 @@
-[![Build Status](https://api.travis-ci.org/dscheerens/tslint-rules.svg?branch=master)](https://travis-ci.org/dscheerens/tslint-rules) [![NPM Version](https://img.shields.io/npm/v/@dscheerens/tslint-rules.svg)](https://www.npmjs.com/package/@dscheerens/tslint-rules)
-
+[![Build Status](https://travis-ci.com/dscheerens/tslint-rules.svg?branch=master)](https://travis-ci.com/dscheerens/tslint-rules) [![NPM Version](https://img.shields.io/npm/v/@dscheerens/tslint-rules.svg)](https://www.npmjs.com/package/@dscheerens/tslint-rules)
 
 # Extra TSLint rules
 
